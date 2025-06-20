@@ -9,31 +9,26 @@
 
 <html>
     <head>
-        <title>Create Employee</title>
+        <title>Thêm Nhân Viên</title>
     </head>
     <body>
-        <h1>Create New Employee</h1>
-        <form action="create" method="post">
-            <label for="ename">Name:</label>
-            <input type="text" id="ename" name="ename" required><br><br>
-
-            <label for="gender">Gender:</label>
-            <select id="gender" name="gender">
+        <h2>Thêm Nhân Viên</h2>
+        <form action="${pageContext.request.contextPath}/employee/create" method="post">
+            Họ tên: <input type="text" name="name" required><br><br>
+            Địa chỉ: <input type="text" name="address"><br><br>
+            Ngày sinh: <input type="date" name="dob" required><br><br>
+            Giới tính:
+            <select name="gender">
                 <option value="true">Male</option>
                 <option value="false">Female</option>
             </select><br><br>
-
-            <label for="address">Address:</label>
-            <input type="text" id="address" name="address"><br><br>
-
-            <label for="did">Department:</label>
-            <select id="did" name="did">
-                <c:forEach var="department" items="${departments}">
-                    <option value="${department.did}">${department.dname}</option>
+            Phòng ban:
+            <select name="divisionID">
+                <c:forEach var="d" items="${divisions}">
+                    <option value="${d.divisionID}">${d.divisionName}</option>
                 </c:forEach>
             </select><br><br>
-
-            <input type="submit" value="Create">
+            <button type="submit">Thêm</button>
         </form>
     </body>
 </html>

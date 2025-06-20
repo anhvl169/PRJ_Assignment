@@ -19,13 +19,13 @@ public class Division {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int divisionID;
 
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String divisionName;
 
     @OneToMany(mappedBy = "division")
     private List<Employee> employees;
 
-
+    // Getters and Setters
     public int getDivisionID() {
         return divisionID;
     }
@@ -49,4 +49,5 @@ public class Division {
     public void setEmployees(List<Employee> employees) {
         this.employees = employees;
     }
+
 }

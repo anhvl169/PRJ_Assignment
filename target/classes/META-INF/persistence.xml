@@ -13,7 +13,7 @@
             <property name="jakarta.persistence.jdbc.driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
 
             <!-- URL kết nối đến cơ sở dữ liệu SQL Server -->
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost\SQLEXPRESS:1433;databaseName=Company;encrypt=true;trustServerCertificate=true; "/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:sqlserver://localhost\SQLEXPRESS:1433;databaseName=ApplicationManagement;encrypt=true;trustServerCertificate=true; "/>
 
             <!-- Thông tin đăng nhập -->
             <property name="jakarta.persistence.jdbc.user" value="admin"/>

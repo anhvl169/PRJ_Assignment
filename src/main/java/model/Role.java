@@ -19,20 +19,17 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int roleID;
 
-    @Column(unique = true)
     private String roleName;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<Employee> employees;
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "RoleFeatures",
+            name = "Role_Feature",
             joinColumns = @JoinColumn(name = "roleID"),
             inverseJoinColumns = @JoinColumn(name = "featureID")
     )
     private List<Feature> features;
 
+    // Getters + setters
     public int getRoleID() {
         return roleID;
     }
@@ -47,14 +44,6 @@ public class Role {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
-    }
-
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
     }
 
     public List<Feature> getFeatures() {

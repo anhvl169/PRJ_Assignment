@@ -16,10 +16,11 @@ public class Feature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int featureID;
 
+    @Column(nullable = false)
     private String featureName;
 
-    @Column(unique = true)
-    private String url;
+    @Column(nullable = false, unique = true)
+    private String urlPath;
 
     @ManyToMany(mappedBy = "features")
     private List<Role> roles;
@@ -42,12 +43,12 @@ public class Feature {
         this.featureName = featureName;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrlPath() {
+        return urlPath;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrlPath(String urlPath) {
+        this.urlPath = urlPath;
     }
 
     public List<Role> getRoles() {
@@ -57,4 +58,5 @@ public class Feature {
     public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
+    
 }

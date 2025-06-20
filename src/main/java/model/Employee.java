@@ -12,7 +12,6 @@ import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 
-
 @Entity
 @Table(name = "Employees")
 public class Employee {
@@ -23,21 +22,20 @@ public class Employee {
 
     private String name;
     private String address;
+
+    @Temporal(TemporalType.DATE)
     private Date dob;
+
     private Boolean gender;
 
     @ManyToOne
     @JoinColumn(name = "DivisionID")
     private Division division;
 
-    @ManyToMany
-    @JoinTable(
-            name = "EmployeeRoles",
-            joinColumns = @JoinColumn(name = "employeeID"),
-            inverseJoinColumns = @JoinColumn(name = "roleID")
-    )
-    private List<Role> roles;
+    @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
+    private Account account;
 
+    // Getters and Setters
     public int getEmployeeID() {
         return employeeID;
     }
@@ -86,12 +84,12 @@ public class Employee {
         this.division = division;
     }
 
-    public List<Role> getRoles() {
-        return roles;
+    public Account getAccount() {
+        return account;
     }
 
-    public void setRoles(List<Role> roles) {
-        this.roles = roles;
+    public void setAccount(Account account) {
+        this.account = account;
     }
-    
+
 }
