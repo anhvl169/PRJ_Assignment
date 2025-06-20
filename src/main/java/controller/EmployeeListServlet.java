@@ -4,6 +4,7 @@
  */
 package controller;
 
+import dal.DivisionDBContext;
 import dal.EmployeeDBContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import model.Division;
 import model.Employee;
 
 /**
@@ -26,6 +28,7 @@ public class EmployeeListServlet extends HttpServlet {
     @Override
     public void init() throws ServletException {
         employeeDBContext = new EmployeeDBContext();
+
     }
 
     @Override
@@ -48,6 +51,10 @@ public class EmployeeListServlet extends HttpServlet {
         } else {
             employees = employeeDBContext.search(name, gender, address, divisionID); // Có lọc
         }
+        //gửi divisions tới list.jsp để dùng dropdown
+        DivisionDBContext divisionDBContext = new DivisionDBContext();
+        List<Division> divisions = divisionDBContext.list();
+        req.setAttribute("divisions", divisions);
 
         // Gửi kết quả và điều kiện tìm kiếm ngược lại cho form
         req.setAttribute("employees", employees);

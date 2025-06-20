@@ -4,6 +4,8 @@
  */
 package dal;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 import model.Division;
 
@@ -11,14 +13,23 @@ import model.Division;
  *
  * @author vulea
  */
-public class DivisionDBContext extends DBContext{
+public class DivisionDBContext extends DBContext {
 
     public List<Division> getAll() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     public Division getById(int divisionID) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        try (EntityManager em = getEntityManager()) {
+            return em.find(Division.class, divisionID);
+        }
     }
-    
+
+    public List<Division> list() {
+        try (EntityManager em = getEntityManager()) {
+            TypedQuery<Division> query = em.createQuery("SELECT d FROM Division d", Division.class);
+            return query.getResultList();
+        }
+    }
+
 }

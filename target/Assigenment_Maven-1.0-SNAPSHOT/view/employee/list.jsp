@@ -23,7 +23,15 @@
                 <option value="false" ${param.gender == 'false' ? 'selected' : ''}>Nữ</option>
             </select>
             Địa chỉ: <input type="text" name="address" value="${param.address}" />
-            Phòng ban (ID): <input type="text" name="divisionID" value="${param.divisionID}" />
+            Phòng ban:
+            <select name="divisionID">
+                <option value="">Tất cả</option>
+                <c:forEach var="d" items="${divisions}">
+                    <option value="${d.divisionID}" ${param.divisionID == d.divisionID ? 'selected' : ''}>
+                        ${d.divisionName}
+                    </option>
+                </c:forEach>
+            </select>
             <input type="submit" value="Tìm kiếm" />
         </form>
 
