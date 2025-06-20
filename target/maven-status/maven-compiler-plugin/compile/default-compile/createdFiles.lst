@@ -1,4 +1,3 @@
-model\ApplicationForLeave.class
 model\AttendanceStatus.class
 com\mycompany\assigenment_maven\resources\JakartaEE10Resource.class
 dal\DBContext.class

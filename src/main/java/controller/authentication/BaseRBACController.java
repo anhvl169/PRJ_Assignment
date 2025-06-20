@@ -25,7 +25,7 @@ public abstract class BaseRBACController extends BaseRequiredAuthenticationContr
             Account account
     ) {
         String current_access_entrypoint = req.getServletPath();
-        if (account.getRoles().size() == 0) {
+        if (account.getRoles().isEmpty()) {
             RoleDBContext db = new RoleDBContext();
             ArrayList<Role> roles = db.getByAccount(account.getAccountID());
             account.setRoles(roles);

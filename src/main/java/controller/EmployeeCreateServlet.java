@@ -4,6 +4,7 @@
  */
 package controller;
 
+import controller.authentication.BaseRBACController;
 import dal.DivisionDBContext;
 import dal.EmployeeDBContext;
 import jakarta.servlet.ServletException;
@@ -16,14 +17,14 @@ import java.util.List;
 import model.Division;
 import model.Employee;
 import java.sql.Date;
+import model.Account;
 
 /**
  *
  * @author vulea
  */
-
 @WebServlet("/request/creates")
-public class EmployeeCreateServlet extends HttpServlet {
+public class EmployeeCreateServlet extends BaseRBACController {
 
     private EmployeeDBContext employeeDBContext;
     private DivisionDBContext divisionDBContext;
@@ -34,21 +35,8 @@ public class EmployeeCreateServlet extends HttpServlet {
         divisionDBContext = new DivisionDBContext();
     }
 
-    // Hiển thị form tạo mới
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        List<Division> divisions = divisionDBContext.getAll();
-        req.setAttribute("divisions", divisions);
-        req.getRequestDispatcher("../view/employee/create.jsp").forward(req, resp);
-    }
-
-    // Xử lý thêm nhân viên
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
+    protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         String name = req.getParameter("name");
         String address = req.getParameter("address");
         String dob = req.getParameter("dob");
@@ -67,5 +55,12 @@ public class EmployeeCreateServlet extends HttpServlet {
         employeeDBContext.insert(employee);
 
         resp.getWriter().println("Inserted " + employee.getEmployeeID());
+    }
+
+    @Override
+    protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
+        List<Division> divisions = divisionDBContext.getAll();
+        req.setAttribute("divisions", divisions);
+        req.getRequestDispatcher("../view/employee/create.jsp").forward(req, resp);
     }
 }

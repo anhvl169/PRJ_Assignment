@@ -9,6 +9,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
 import model.Account;
+import model.Role;
 
 /**
  *
@@ -19,20 +20,24 @@ public class AccountDBContext extends DBContext {
     public Account getAccountByUsernameAndPassword(String username, String password) {
         EntityManager em = getEntityManager();
         try {
-            // JOIN FETCH để load roles và features luôn khi lấy account
-            String jpql = "SELECT DISTINCT a FROM Account a "
+            // Bước 1: Lấy account + roles
+            Account acc = em.createQuery(
+                    "SELECT DISTINCT a FROM Account a "
                     + "LEFT JOIN FETCH a.roles r "
-                    + "LEFT JOIN FETCH r.features "
-                    + "WHERE a.username = :username AND a.password = :password";
-
-            return em.createQuery(jpql, Account.class)
+                    + "WHERE a.username = :username AND a.password = :password", Account.class)
                     .setParameter("username", username)
                     .setParameter("password", password)
                     .getSingleResult();
+
+            for (Role role : acc.getRoles()) {
+                role.getFeatures().size(); 
+            }
+
+            return acc;
         } catch (NoResultException e) {
             return null;
         } finally {
-            em.close(); // Quan trọng để tránh leak connection
+            em.close();
         }
     }
 
