@@ -7,6 +7,7 @@ package dal;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import java.util.List;
 import model.Account;
 
 /**
@@ -16,17 +17,31 @@ import model.Account;
 public class AccountDBContext extends DBContext {
 
     public Account getAccountByUsernameAndPassword(String username, String password) {
-        try (EntityManager em = getEntityManager()) {
-            TypedQuery<Account> query = em.createQuery(
-                    "SELECT a FROM Account a WHERE a.username = :username AND a.password = :password",
-                    Account.class
-            );
-            query.setParameter("username", username);
-            query.setParameter("password", password);
+        EntityManager em = getEntityManager();
+        try {
+            // JOIN FETCH để load roles và features luôn khi lấy account
+            String jpql = "SELECT DISTINCT a FROM Account a "
+                    + "LEFT JOIN FETCH a.roles r "
+                    + "LEFT JOIN FETCH r.features "
+                    + "WHERE a.username = :username AND a.password = :password";
 
-            return query.getSingleResult(); // trả về account nếu đúng
+            return em.createQuery(jpql, Account.class)
+                    .setParameter("username", username)
+                    .setParameter("password", password)
+                    .getSingleResult();
         } catch (NoResultException e) {
-            return null; // không có user
+            return null;
+        } finally {
+            em.close(); // Quan trọng để tránh leak connection
+        }
+    }
+
+    public List<Account> list() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery("SELECT a FROM Account a", Account.class).getResultList();
+        } finally {
+            em.close();
         }
     }
 }

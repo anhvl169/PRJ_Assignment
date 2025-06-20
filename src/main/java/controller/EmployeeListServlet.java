@@ -4,6 +4,7 @@
  */
 package controller;
 
+import controller.authentication.BaseRBACController;
 import dal.DivisionDBContext;
 import dal.EmployeeDBContext;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import model.Account;
 import model.Division;
 import model.Employee;
 
@@ -21,7 +23,7 @@ import model.Employee;
  * @author vulea
  */
 @WebServlet("/request/list")
-public class EmployeeListServlet extends HttpServlet {
+public class EmployeeListServlet extends BaseRBACController {
 
     private EmployeeDBContext employeeDBContext;
 
@@ -32,9 +34,12 @@ public class EmployeeListServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
+    @Override
+    protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         // Lấy các tham số tìm kiếm
         String name = req.getParameter("name");
         String gender = req.getParameter("gender");
