@@ -54,7 +54,7 @@
                                 <td>
                                     <span class="badge
                                           <c:choose>
-                                              <c:when test="${r.status == 'Pending'}">bg-warning text-dark</c:when>
+                                              <c:when test="${r.status == 'Inprogress'}">bg-warning text-dark</c:when>
                                               <c:when test="${r.status == 'Approved'}">bg-success</c:when>
                                               <c:when test="${r.status == 'Rejected'}">bg-danger</c:when>
                                               <c:otherwise>bg-secondary</c:otherwise>

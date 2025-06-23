@@ -48,7 +48,7 @@ public class LeaveRequestServlet extends BaseRBACController {
             leave.setToDate(toDate);
             leave.setReason(reason);
             leave.setApplicaText(applicaText);
-            leave.setStatus("Pending");
+            leave.setStatus("Inprogress");
 
             leaveDB.insert(leave);
 

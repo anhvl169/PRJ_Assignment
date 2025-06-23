@@ -35,7 +35,7 @@ public class LeaveApproveServlet extends BaseRBACController {
         int requestID = Integer.parseInt(req.getParameter("id"));
         String action = req.getParameter("action");
         LeaveRequests request = leaveDB.findById(requestID);
-        if (request == null || !request.getStatus().equals("Pending")) {
+        if (request == null || !request.getStatus().equals("Inprogress")) {
             resp.sendError(400, "Invalid or already processed request");
             return;
         }

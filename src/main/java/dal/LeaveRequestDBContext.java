@@ -44,7 +44,7 @@ public class LeaveRequestDBContext extends DBContext {
 
     public List<LeaveRequests> getPendingRequests() {
         try (EntityManager em = getEntityManager()) {
-            String jpql = "SELECT r FROM LeaveRequests r WHERE r.status = 'Pending'";
+            String jpql = "SELECT r FROM LeaveRequests r WHERE r.status = 'Inprogress'";
             return em.createQuery(jpql, LeaveRequests.class).getResultList();
         }
     }
