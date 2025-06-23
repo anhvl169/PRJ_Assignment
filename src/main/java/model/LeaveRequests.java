@@ -42,7 +42,7 @@ public class LeaveRequests {
 
     @ManyToOne
     @JoinColumn(name = "approvedBy")
-    private Employee approvedBy;
+    private Account approvedBy;
 
     @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -104,11 +104,11 @@ public class LeaveRequests {
         this.status = status;
     }
 
-    public Employee getApprovedBy() {
+    public Account getApprovedBy() {
         return approvedBy;
     }
 
-    public void setApprovedBy(Employee approvedBy) {
+    public void setApprovedBy(Account approvedBy) {
         this.approvedBy = approvedBy;
     }
 
