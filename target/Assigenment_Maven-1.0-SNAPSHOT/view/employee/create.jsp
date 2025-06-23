@@ -18,6 +18,11 @@
     <body class="bg-light">
 
         <div class="container mt-5">
+            <div>
+                <a href="${pageContext.request.contextPath}/home" class="btn btn-primary">
+                    Home
+                </a>
+            </div>
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">Thêm Nhân Viên</h4>
@@ -67,7 +72,7 @@
                                 </div>
                             </c:forEach>
                         </div>
-                        
+
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-success">Thêm Nhân Viên</button>
                         </div>

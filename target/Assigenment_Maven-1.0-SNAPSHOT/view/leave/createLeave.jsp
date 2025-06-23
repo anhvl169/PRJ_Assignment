@@ -13,6 +13,11 @@
     </head>
     <body>
         <div class="container mt-5">
+            <div>
+                <a href="${pageContext.request.contextPath}/home" class="btn btn-primary">
+                    Home
+                </a>
+            </div>
             <div class="card">
                 <div class="card-header bg-primary text-white">Tạo Đơn Xin Nghỉ</div>
                 <div class="card-body">

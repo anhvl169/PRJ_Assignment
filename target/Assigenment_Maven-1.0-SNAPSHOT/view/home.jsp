@@ -15,7 +15,7 @@
     </head>
     <body class="bg-light">
         <div class="container mt-5">
-            <h2>Xin chào, ${sessionScope.account.username}</h2>
+            <h2>Xin chào, ${sessionScope.account.employee.name}</h2>
             <p>Chức năng bạn có quyền truy cập:</p>
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 

@@ -16,7 +16,13 @@
     </head>
     <body class="bg-light">
 
+
         <div class="container py-4">
+            <div>
+                <a href="${pageContext.request.contextPath}/home" class="btn btn-primary">
+                    Home
+                </a>
+            </div>
             <h2 class="mb-4 text-primary">Danh sách nhân viên</h2>
 
             <!-- Form tìm kiếm -->

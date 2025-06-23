@@ -16,6 +16,11 @@
     </head>
     <body>
         <div class="container mt-5">
+            <div>
+                <a href="${pageContext.request.contextPath}/home" class="btn btn-primary">
+                    Home
+                </a>
+            </div>
             <h2 class="mb-4 text-center">Danh sách đơn xin nghỉ</h2>
 
             <div class="table-responsive">
@@ -26,8 +31,8 @@
                             <th scope="col">From</th>
                             <th scope="col">To</th>              
                             <th scope="col">Created By</th>                  
-                            <th scope="col">Trạng thái</th>
-                            <th scope="col">Duyệt bởi</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Processed By</th>
                         </tr>
                     </thead>
                     <tbody>
