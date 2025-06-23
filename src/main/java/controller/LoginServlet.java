@@ -39,7 +39,7 @@ public class LoginServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/home");
         } else {
             req.setAttribute("error", "Tên đăng nhập hoặc mật khẩu sai");
-            req.getRequestDispatcher("./view/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("../view/login.jsp").forward(req, resp);
         }
     }
 }

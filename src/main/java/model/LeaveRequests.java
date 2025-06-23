@@ -17,54 +17,51 @@ public class LeaveRequests {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int applicaID;
+    private int requestID;
 
     @ManyToOne
     @JoinColumn(name = "createdBy", nullable = false)
-    private Employee createdBy;
+    private Account createdBy;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date fromDate;
+
+    @Column(nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date toDate;
+
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String reason;
+
+    @Column(length = 255)
+    private String applicaText;
+
+    @Column(length = 20, nullable = false)
+    private String status = "Pending";
 
     @ManyToOne
     @JoinColumn(name = "approvedBy")
     private Employee approvedBy;
 
-    private String applicaText;
-    private Date fromDate;
-    private Date toDate;
-    private String reason;
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate = new Date();
 
-    @Column(length = 20)
-    private String status;
-
-    public int getApplicaID() {
-        return applicaID;
+    public int getRequestID() {
+        return requestID;
     }
 
-    public void setApplicaID(int applicaID) {
-        this.applicaID = applicaID;
+    public void setRequestID(int requestID) {
+        this.requestID = requestID;
     }
 
-    public Employee getCreatedBy() {
+    public Account getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(Employee createdBy) {
+    public void setCreatedBy(Account createdBy) {
         this.createdBy = createdBy;
-    }
-
-    public Employee getApprovedBy() {
-        return approvedBy;
-    }
-
-    public void setApprovedBy(Employee approvedBy) {
-        this.approvedBy = approvedBy;
-    }
-
-    public String getApplicaText() {
-        return applicaText;
-    }
-
-    public void setApplicaText(String applicaText) {
-        this.applicaText = applicaText;
     }
 
     public Date getFromDate() {
@@ -91,12 +88,36 @@ public class LeaveRequests {
         this.reason = reason;
     }
 
+    public String getApplicaText() {
+        return applicaText;
+    }
+
+    public void setApplicaText(String applicaText) {
+        this.applicaText = applicaText;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Employee getApprovedBy() {
+        return approvedBy;
+    }
+
+    public void setApprovedBy(Employee approvedBy) {
+        this.approvedBy = approvedBy;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
 }

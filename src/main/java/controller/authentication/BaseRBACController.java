@@ -4,6 +4,7 @@
  */
 package controller.authentication;
 
+import dal.AccountDBContext;
 import dal.RoleDBContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +19,14 @@ import model.Role;
  *
  * @author vulea
  */
-public abstract class BaseRBACController extends BaseRequiredAuthenticationController{
+public abstract class BaseRBACController extends BaseRequiredAuthenticationController {
 
     private boolean isGrantedAccessControl(
             HttpServletRequest req,
             Account account
     ) {
         String current_access_entrypoint = req.getServletPath();
+
         if (account.getRoles().isEmpty()) {
             RoleDBContext db = new RoleDBContext();
             ArrayList<Role> roles = db.getByAccount(account.getAccountID());

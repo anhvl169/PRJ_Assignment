@@ -21,7 +21,7 @@ public abstract class DBContext {
 
     }
 
-    protected EntityManager getEntityManager() {
+    public EntityManager getEntityManager() {
         return entityManagerFactory.createEntityManager();
     }
 }

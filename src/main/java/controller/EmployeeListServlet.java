@@ -7,6 +7,7 @@ package controller;
 import controller.authentication.BaseRBACController;
 import dal.DivisionDBContext;
 import dal.EmployeeDBContext;
+import dal.RoleDBContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -56,7 +57,16 @@ public class EmployeeListServlet extends BaseRBACController {
         } else {
             employees = employeeDBContext.search(name, gender, address, divisionID); // Có lọc
         }
-        //gửi divisions tới list.jsp để dùng dropdown
+
+        // Load roles cho từng account của employee
+        RoleDBContext roleDB = new RoleDBContext();
+        for (Employee e : employees) {
+            if (e.getAccount() != null) {
+                e.getAccount().setRoles(roleDB.getByAccount(e.getAccount().getAccountID()));
+            }
+        }
+
+        // Gửi divisions tới dropdown
         DivisionDBContext divisionDBContext = new DivisionDBContext();
         List<Division> divisions = divisionDBContext.list();
         req.setAttribute("divisions", divisions);

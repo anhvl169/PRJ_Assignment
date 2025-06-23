@@ -30,7 +30,7 @@ public class AccountDBContext extends DBContext {
                     .getSingleResult();
 
             for (Role role : acc.getRoles()) {
-                role.getFeatures().size(); 
+                role.getFeatures().size();
             }
 
             return acc;
@@ -49,4 +49,21 @@ public class AccountDBContext extends DBContext {
             em.close();
         }
     }
+
+    public Account get(String username, String password) {
+        try (EntityManager em = getEntityManager()) {
+            String jpql = "SELECT a FROM Account a "
+                    + "JOIN FETCH a.employee "
+                    + "LEFT JOIN FETCH a.roles r "
+                    + "LEFT JOIN FETCH r.features "
+                    + "WHERE a.username = :username AND a.password = :password";
+            return em.createQuery(jpql, Account.class)
+                    .setParameter("username", username)
+                    .setParameter("password", password)
+                    .getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }
+

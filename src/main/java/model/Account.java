@@ -21,9 +21,11 @@ public class Account {
 
     private String username;
     private String password;
+
     @OneToOne
     @JoinColumn(name = "employeeID")
     private Employee employee;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "Account_Role",
@@ -32,7 +34,6 @@ public class Account {
     )
     private List<Role> roles;
 
-    // Getters + setters
     public int getAccountID() {
         return accountID;
     }
@@ -63,6 +64,14 @@ public class Account {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
 }
