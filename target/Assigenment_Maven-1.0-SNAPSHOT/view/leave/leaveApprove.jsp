@@ -67,6 +67,39 @@
             <c:if test="${empty requests}">
                 <div class="alert alert-info text-center">Không có đơn nào đang chờ duyệt.</div>
             </c:if>
+
+
+            <h2 class="mt-5 mb-4 text-center text-primary">Danh sách đơn của cấp dưới</h2>  
+            <table class="table table-bordered table-striped bg-white shadow-sm">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Người tạo</th>
+                        <th>Từ ngày</th>
+                        <th>Đến ngày</th>
+                        <th>Lý do</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <c:forEach var="a" items="${allRequests}">
+                    <tr>
+                        <td>${a.createdBy.employee.name}</td>
+                        <td>${a.fromDate}</td>
+                        <td>${a.toDate}</td>
+                        <td>${a.reason}</td>
+                        <td>
+                            <span class="badge
+                                  <c:choose>
+                                      <c:when test="${a.status == 'Inprogress'}">bg-warning text-dark</c:when>
+                                      <c:when test="${a.status == 'Approved'}">bg-success</c:when>
+                                      <c:when test="${a.status == 'Rejected'}">bg-danger</c:when>
+                                      <c:otherwise>bg-secondary</c:otherwise>
+                                  </c:choose>">
+                                ${a.status}
+                            </span>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
         </div>
     </body>
 </html>

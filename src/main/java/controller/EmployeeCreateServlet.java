@@ -19,6 +19,7 @@ import model.Division;
 import model.Employee;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Set;
 import model.Account;
 import model.Role;
 
@@ -41,13 +42,19 @@ public class EmployeeCreateServlet extends BaseRBACController {
     @Override
     protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account)
             throws ServletException, IOException {
-
+        //lấy thông tin từ form
         String name = req.getParameter("name");
         String address = req.getParameter("address");
         String dob = req.getParameter("dob");
         boolean gender = Boolean.parseBoolean(req.getParameter("gender"));
         int divisionID = Integer.parseInt(req.getParameter("divisionID"));
-
+        String managerIDRaw = req.getParameter("managerID");
+        Employee manager = null;
+        if (managerIDRaw != null && !managerIDRaw.isEmpty()) {
+            int managerID = Integer.parseInt(managerIDRaw);
+            //lấy thông tin manager
+            manager = employeeDBContext.getById(managerID);
+        }
         // Lấy thông tin phòng ban
         Division division = divisionDBContext.getById(divisionID);
 
@@ -58,6 +65,7 @@ public class EmployeeCreateServlet extends BaseRBACController {
         employee.setDob(Date.valueOf(dob));
         employee.setGender(gender);
         employee.setDivision(division);
+        employee.setManager(manager);
 
         // Lấy role từ form
         String[] roleIDs = req.getParameterValues("roleIDs");
@@ -96,10 +104,12 @@ public class EmployeeCreateServlet extends BaseRBACController {
     protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account)
             throws ServletException, IOException {
         List<Division> divisions = divisionDBContext.getAll();
+        List<Employee> groupLeaders = employeeDBContext.getGroupLeaders();
         RoleDBContext roleDBContext = new RoleDBContext();
         List<Role> roles = roleDBContext.list();
 
         req.setAttribute("divisions", divisions);
+        req.setAttribute("groupLeaders", groupLeaders);
         req.setAttribute("roles", roles);
 
         req.getRequestDispatcher("/view/employee/create.jsp").forward(req, resp);

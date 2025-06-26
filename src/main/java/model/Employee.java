@@ -35,7 +35,31 @@ public class Employee {
     @OneToOne(mappedBy = "employee", cascade = CascadeType.ALL)
     private Account account;
 
+    @ManyToOne
+    @JoinColumn(name = "managerID") // tên cột trong DB
+    private Employee manager;
+
+    @OneToMany(mappedBy = "manager")
+    private List<Employee> subordinates;
+
     // Getters and Setters
+
+    public List<Employee> getSubordinates() {
+        return subordinates;
+    }
+
+    public void setSubordinates(List<Employee> subordinates) {
+        this.subordinates = subordinates;
+    }
+    
+    public Employee getManager() {
+        return manager;
+    }
+
+    public void setManager(Employee manager) {
+        this.manager = manager;
+    }
+
     public int getEmployeeID() {
         return employeeID;
     }

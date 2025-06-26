@@ -70,4 +70,21 @@ public class EmployeeDBContext extends DBContext {
             return query.getResultList();
         }
     }
+
+    public List<Employee> getGroupLeaders() {
+        EntityManager em = getEntityManager();
+        String jpql = "       SELECT DISTINCT e FROM Employee e\n"
+                + "        JOIN e.account a\n"
+                + "        JOIN a.roles r\n"
+                + "        WHERE r.roleName = 'Groupleader' ";
+
+        TypedQuery<Employee> query = em.createQuery(jpql, Employee.class);
+        return query.getResultList();
+    }
+
+    public Employee getById(int id) {
+        try (EntityManager em = getEntityManager()) {
+            return em.find(Employee.class, id);
+        }
+    }
 }

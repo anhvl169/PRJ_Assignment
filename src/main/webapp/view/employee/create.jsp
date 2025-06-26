@@ -62,6 +62,16 @@
                         </div>
 
                         <div class="mb-3">
+                            <label for="managerID">GroupLeade):</label>
+                            <select name="managerID" id="managerID">
+                                <option value="">-- Không chọn --</option>
+                                <c:forEach var="e" items="${groupLeaders}">
+                                    <option value="${e.employeeID}">${e.name}</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Chọn Quyền</label>
                             <c:forEach var="role" items="${roles}">
                                 <div class="form-check">

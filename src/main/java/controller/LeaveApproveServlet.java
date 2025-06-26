@@ -49,7 +49,14 @@ public class LeaveApproveServlet extends BaseRBACController {
 
     @Override
     protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
+        //lấy leave request đang trong trạng thái inprogress chưa được duyệt
         List<LeaveRequests> pendingRequests = leaveDB.getPendingRequests();
+        
+        //lấy tất cả các đơn của cấp dưới
+        int empId = account.getEmployee().getEmployeeID();
+        List<LeaveRequests> allRequests = leaveDB.getAllSubordinateRequests(empId);
+        
+        req.setAttribute("allRequests", allRequests);
         req.setAttribute("requests", pendingRequests);
         req.getRequestDispatcher("/view/leave/leaveApprove.jsp").forward(req, resp);
     }

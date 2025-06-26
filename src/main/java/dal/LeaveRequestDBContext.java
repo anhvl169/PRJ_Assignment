@@ -63,4 +63,32 @@ public class LeaveRequestDBContext extends DBContext {
         }
     }
 
+    public List<LeaveRequests> getAllSubordinateRequests(int managerEmployeeId) {
+        EntityManager em = getEntityManager();
+        try {
+            String sql = "            WITH EmployeeHierarchy AS (\n"
+                    + "                SELECT e.EmployeeID, e.ManagerID\n"
+                    + "                FROM Employees e\n"
+                    + "                WHERE e.EmployeeID = :managerId\n"
+                    + "\n"
+                    + "                UNION ALL\n"
+                    + "\n"
+                    + "                SELECT e.EmployeeID, e.ManagerID\n"
+                    + "                FROM Employees e\n"
+                    + "                INNER JOIN EmployeeHierarchy eh ON e.ManagerID = eh.EmployeeID\n"
+                    + "            )\n"
+                    + "            SELECT lr.*\n"
+                    + "            FROM EmployeeHierarchy eh\n"
+                    + "            INNER JOIN Accounts a ON a.EmployeeID = eh.EmployeeID\n"
+                    + "            INNER JOIN LeaveRequests lr ON lr.createdBy = a.AccountID";
+
+            return em.createNativeQuery(sql, LeaveRequests.class)
+                    .setParameter("managerId", managerEmployeeId)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
 }
