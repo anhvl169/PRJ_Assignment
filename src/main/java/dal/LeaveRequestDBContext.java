@@ -5,9 +5,15 @@
 package dal;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import model.Employee;
 import model.LeaveRequests;
 
 /**
@@ -15,7 +21,7 @@ import model.LeaveRequests;
  * @author vulea
  */
 public class LeaveRequestDBContext extends DBContext {
-
+    private static final Logger LOGGER = Logger.getLogger(LeaveRequestDBContext.class.getName());
     public void insert(LeaveRequests request) {
         try (EntityManager em = getEntityManager()) {
             em.getTransaction().begin();
@@ -33,6 +39,7 @@ public class LeaveRequestDBContext extends DBContext {
         }
     }
 
+    //xem đơn của mình
     public List<LeaveRequests> getByAccount(int accountID) {
         try (EntityManager em = getEntityManager()) {
             String jpql = "SELECT r FROM LeaveRequests r WHERE r.createdBy.accountID = :aid";
@@ -63,6 +70,7 @@ public class LeaveRequestDBContext extends DBContext {
         }
     }
 
+    //lấy đơn cấp dưới
     public List<LeaveRequests> getAllSubordinateRequests(int managerEmployeeId) {
         EntityManager em = getEntityManager();
         try {
@@ -91,4 +99,40 @@ public class LeaveRequestDBContext extends DBContext {
         }
     }
 
+//    public List<LeaveRequests> getApprovedInRange(java.sql.Date fromDate, java.sql.Date toDate) {
+//        EntityManager em = getEntityManager();
+//        try {
+//            return em.createQuery(
+//                    "SELECT lr FROM LeaveRequests lr WHERE lr.status = 'Approved' AND lr.fromDate <= :toDate AND lr.toDate >= :fromDate", LeaveRequests.class)
+//                    .setParameter("fromDate", fromDate)
+//                    .setParameter("toDate", toDate)
+//                    .getResultList();
+//        } finally {
+//            if (em != null && em.isOpen()) {
+//                em.close();
+//            }
+//        }
+//    }
+    public List<LeaveRequests> getApprovedInRange(java.sql.Date fromDate, java.sql.Date toDate) {
+        EntityManager em = getEntityManager();
+        try {
+            LOGGER.info("Querying leave requests from " + fromDate + " to " + toDate);
+            Query query = em.createQuery(
+                    "SELECT lr FROM LeaveRequests lr WHERE lr.status = 'Approved' AND lr.fromDate <= :toDate AND lr.toDate >= :fromDate", LeaveRequests.class)
+                    .setParameter("fromDate", fromDate)
+                    .setParameter("toDate", toDate);
+            List<LeaveRequests> results = query.getResultList();
+            LOGGER.info("Found " + results.size() + " approved leave requests");
+            for (LeaveRequests lr : results) {
+                LOGGER.info("Leave Request: EmployeeID=" + (lr.getCreatedBy() != null && lr.getCreatedBy().getEmployee() != null
+                        ? lr.getCreatedBy().getEmployee().getEmployeeID() : "null")
+                        + ", From=" + lr.getFromDate() + ", To=" + lr.getToDate() + ", Status=" + lr.getStatus());
+            }
+            return results;
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
 }

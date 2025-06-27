@@ -17,10 +17,36 @@ import model.Role;
  */
 public class AccountDBContext extends DBContext {
 
+//    public Account getAccountByUsernameAndPassword(String username, String password) {
+//        EntityManager em = getEntityManager();
+//        try {
+//            // Bước 1: Lấy account + roles
+//            Account acc = em.createQuery(
+//                    "SELECT DISTINCT a FROM Account a "
+//                    + "LEFT JOIN FETCH a.roles r "
+//                    + "WHERE a.username = :username AND a.password = :password", Account.class)
+//                    .setParameter("username", username)
+//                    .setParameter("password", password)
+//                    .getSingleResult();
+//
+//            for (Role role : acc.getRoles()) {
+//                role.getFeatures().size();
+//            }
+//
+//            return acc;
+//        } catch (NoResultException e) {
+//            return null;
+//        } finally {
+//            em.close();
+//        }
+//    }
     public Account getAccountByUsernameAndPassword(String username, String password) {
         EntityManager em = getEntityManager();
         try {
-            // Bước 1: Lấy account + roles
+            // Use a transaction for consistency
+            em.getTransaction().begin();
+
+            // Fetch account with roles, but limit features to avoid excessive memory use
             Account acc = em.createQuery(
                     "SELECT DISTINCT a FROM Account a "
                     + "LEFT JOIN FETCH a.roles r "
@@ -29,15 +55,24 @@ public class AccountDBContext extends DBContext {
                     .setParameter("password", password)
                     .getSingleResult();
 
-            for (Role role : acc.getRoles()) {
-                role.getFeatures().size();
-            }
-
+            // Initialize features lazily if needed, but avoid forcing size() unless necessary
+            // Remove the loop unless features are required immediately
+             for (Role role : acc.getRoles()) {
+                 role.getFeatures().size(); // Comment out unless needed
+             }
+            em.getTransaction().commit();
             return acc;
         } catch (NoResultException e) {
             return null;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e; // Re-throw to log or handle higher up
         } finally {
-            em.close();
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
         }
     }
 
@@ -66,4 +101,3 @@ public class AccountDBContext extends DBContext {
         }
     }
 }
-

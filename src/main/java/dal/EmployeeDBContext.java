@@ -87,4 +87,33 @@ public class EmployeeDBContext extends DBContext {
             return em.find(Employee.class, id);
         }
     }
+
+    public List<Employee> getAll() {
+        try (EntityManager em = getEntityManager()) {
+            return em.createQuery("SELECT e FROM Employee e", Employee.class).getResultList();
+        }
+    }
+
+    public List<Employee> getByDivision(int divisionID) {
+        EntityManager em = getEntityManager();
+        try {
+            String jpql = "SELECT e FROM Employee e WHERE e.division.divisionID = :did";
+            TypedQuery<Employee> query = em.createQuery(jpql, Employee.class);
+            query.setParameter("did", divisionID);
+            return query.getResultList();
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    public List<Employee> getByManager(int managerID) {
+        try (EntityManager em = getEntityManager()) {
+            String jpql = "SELECT e FROM Employee e WHERE e.manager.employeeID = :mid";
+            TypedQuery<Employee> query = em.createQuery(jpql, Employee.class);
+            query.setParameter("mid", managerID);
+            return query.getResultList();
+        }
+    }
 }
