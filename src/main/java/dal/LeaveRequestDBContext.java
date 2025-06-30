@@ -58,6 +58,37 @@ public class LeaveRequestDBContext extends DBContext {
         }
     }
 
+    public List<LeaveRequests> getPendingRequestsOfSubordinates(int managerEmployeeId) {
+        EntityManager em = getEntityManager();
+        try {
+            String sql = "            WITH EmployeeHierarchy AS (\n"
+                    + "                SELECT e.EmployeeID\n"
+                    + "                FROM Employees e\n"
+                    + "                WHERE e.EmployeeID = :managerId\n"
+                    + "\n"
+                    + "                UNION ALL\n"
+                    + "\n"
+                    + "                SELECT e.EmployeeID\n"
+                    + "                FROM Employees e\n"
+                    + "                INNER JOIN EmployeeHierarchy eh ON e.ManagerID = eh.EmployeeID\n"
+                    + "            )\n"
+                    + "            SELECT lr.*\n"
+                    + "            FROM EmployeeHierarchy eh\n"
+                    + "            INNER JOIN Accounts a ON a.EmployeeID = eh.EmployeeID\n"
+                    + "            INNER JOIN LeaveRequests lr ON lr.createdBy = a.AccountID\n"
+                    + "            WHERE lr.status = 'Inprogress' AND lr.createdBy != (\n"
+                    + "                SELECT a.AccountID FROM Accounts a WHERE a.EmployeeID = :managerId\n"
+                    + "            )";
+
+            return em.createNativeQuery(sql, LeaveRequests.class)
+                    .setParameter("managerId", managerEmployeeId)
+                    .getResultList();
+
+        } finally {
+            em.close();
+        }
+    }
+
     public LeaveRequests findById(int id) {
         try (EntityManager em = getEntityManager()) {
             return em.find(LeaveRequests.class, id);
