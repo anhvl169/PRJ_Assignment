@@ -20,19 +20,19 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
 
                 <c:forEach var="f" items="${features}">
-                    
-                    <div class="col">
-                        <div class="card h-100 shadow-sm border-0">
-                            <div class="card-body">
-                                <h5 class="card-title">${f.featureName}</h5>
-                                <a href="${pageContext.request.contextPath}${f.urlPath}" class="btn btn-primary">
-                                    Truy cập
-                                </a>
+                    <c:if test="${f.urlPath != '/home'}">
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body">
+                                    <h5 class="card-title">${f.featureName}</h5>
+                                    <a href="${pageContext.request.contextPath}${f.urlPath}" class="btn btn-primary">
+                                        Truy cập
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </c:if>
                 </c:forEach>
-
             </div>
         </div>
     </body>

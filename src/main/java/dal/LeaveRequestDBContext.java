@@ -21,7 +21,9 @@ import model.LeaveRequests;
  * @author vulea
  */
 public class LeaveRequestDBContext extends DBContext {
+
     private static final Logger LOGGER = Logger.getLogger(LeaveRequestDBContext.class.getName());
+
     public void insert(LeaveRequests request) {
         try (EntityManager em = getEntityManager()) {
             em.getTransaction().begin();
@@ -88,7 +90,8 @@ public class LeaveRequestDBContext extends DBContext {
                     + "            SELECT lr.*\n"
                     + "            FROM EmployeeHierarchy eh\n"
                     + "            INNER JOIN Accounts a ON a.EmployeeID = eh.EmployeeID\n"
-                    + "            INNER JOIN LeaveRequests lr ON lr.createdBy = a.AccountID";
+                    + "            INNER JOIN LeaveRequests lr ON lr.createdBy = a.AccountID\n"
+                    + "            WHERE a.EmployeeID != :managerId";
 
             return em.createNativeQuery(sql, LeaveRequests.class)
                     .setParameter("managerId", managerEmployeeId)
