@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Date;
 import model.Account;
-import model.Employee;
 import model.LeaveRequests;
 
 /**
@@ -43,10 +42,16 @@ public class LeaveRequestServlet extends BaseRBACController {
             Date toDate = Date.valueOf(toDateStr);
 
             LeaveRequests leave = new LeaveRequests();
+            System.out.println("AccountID: " + account.getAccountID());
+            System.out.println("Employee: " + account.getEmployee());
+            if (account.getEmployee() != null) {
+                System.out.println("EmployeeID: " + account.getEmployee().getEmployeeID());
+            }
             leave.setCreatedBy(account);
             leave.setFromDate(fromDate);
             leave.setToDate(toDate);
             leave.setReason(reason);
+            leave.setApplicaText(applicaText);
             leave.setApplicaText(applicaText);
             leave.setStatus("Inprogress");
 

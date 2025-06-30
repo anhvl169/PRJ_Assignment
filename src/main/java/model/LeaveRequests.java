@@ -38,7 +38,7 @@ public class LeaveRequests {
     private String applicaText;
 
     @Column(length = 20, nullable = false)
-    private String status = "Pending";
+    private String status = "Inprogress";
 
     @ManyToOne
     @JoinColumn(name = "approvedBy")

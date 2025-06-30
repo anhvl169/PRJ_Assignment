@@ -49,16 +49,19 @@
                             <td>${r.toDate}</td>
                             <td>${r.reason}</td>
                             <td>${r.createdBy.username}</td>
-                            <td class="text-center">
-                                <form method="post" class="d-inline">
-                                    <input type="hidden" name="id" value="${r.requestID}" />
-                                    <button name="action" value="approve" class="btn btn-success btn-sm">Duyệt</button>
-                                </form>
-                                <form method="post" class="d-inline">
-                                    <input type="hidden" name="id" value="${r.requestID}" />
-                                    <button name="action" value="reject" class="btn btn-danger btn-sm">Từ chối</button>
-                                </form>
-                            </td>
+                            <c:if test="${request.createdBy.employee.manager.employeeID == sessionScope.account.employee.employeeID}">
+                                <td class="text-center">
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="${r.requestID}" />
+                                        <button name="action" value="approve" class="btn btn-success btn-sm">Duyệt</button>
+                                    </form>
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="${r.requestID}" />
+                                        <button name="action" value="reject" class="btn btn-danger btn-sm">Từ chối</button>
+                                    </form>
+                                </td>
+                            </c:if>
+
                         </tr>
                     </c:forEach>
                 </tbody>

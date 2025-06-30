@@ -83,7 +83,7 @@ public class ViewAgendaServlet extends BaseRBACController {
             for (Employee emp : employees) {
                 LOGGER.info("Employee: " + emp.getName() + ", ID: " + emp.getEmployeeID());
             }
-
+            
             // 3. Lấy đơn xin nghỉ được duyệt trong khoảng thời gian
             List<LeaveRequests> leaveRequests = leaveDB.getApprovedInRange(fromDate, toDate);
             LOGGER.info("Found " + leaveRequests.size() + " approved leave requests");

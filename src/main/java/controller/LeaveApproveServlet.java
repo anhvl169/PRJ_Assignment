@@ -34,28 +34,38 @@ public class LeaveApproveServlet extends BaseRBACController {
     protected void processPost(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         int requestID = Integer.parseInt(req.getParameter("id"));
         String action = req.getParameter("action");
+
         LeaveRequests request = leaveDB.findById(requestID);
         if (request == null || !request.getStatus().equals("Inprogress")) {
             resp.sendError(400, "Invalid or already processed request");
             return;
         }
+
+        // Kiểm tra người duyệt có phải là manager trực tiếp của người tạo hay không
+        int approverID = account.getEmployee().getEmployeeID();
+        int requesterManagerID = request.getCreatedBy().getEmployee().getManager().getEmployeeID(); // người quản lý trực tiếp
+
+        if (approverID != requesterManagerID) {
+            resp.sendError(403, "You are not authorized to approve this request");
+            return;
+        }
+
         request.setStatus(action.equals("approve") ? "Approved" : "Rejected");
         request.setApprovedBy(account);
         leaveDB.update(request);
-        
+
         resp.sendRedirect(req.getContextPath() + "/leave/approve");
-        
     }
 
     @Override
     protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         //lấy leave request đang trong trạng thái inprogress chưa được duyệt
         List<LeaveRequests> pendingRequests = leaveDB.getPendingRequests();
-        
+
         //lấy tất cả các đơn của cấp dưới
         int empId = account.getEmployee().getEmployeeID();
         List<LeaveRequests> allRequests = leaveDB.getAllSubordinateRequests(empId);
-        
+
         req.setAttribute("allRequests", allRequests);
         req.setAttribute("requests", pendingRequests);
         req.getRequestDispatcher("/view/leave/leaveApprove.jsp").forward(req, resp);
