@@ -6,9 +6,12 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <html>
     <head>
         <title>Agenda</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
         <style>
             table {
                 border-collapse: collapse;
@@ -29,64 +32,70 @@
             form {
                 margin-bottom: 20px;
             }
-            .debug {
-                color: blue;
-                font-size: 12px;
-            }
         </style>
     </head>
     <body>
-        <h2>Tình hình nhân sự</h2>
+        <div class="container mt-3">
+            <h2>Tình hình nhân sự</h2>
+            <div>
+                <a href="${pageContext.request.contextPath}/home" class="btn btn-primary mb-3">Home</a>
+            </div>
 
-        <!-- ✅ FORM CHỌN NGÀY -->
-        <form method="get" action="${pageContext.request.contextPath}/agenda/view">
-            <label>Ngày bắt đầu: 
-                <input type="date" name="from" value="${from}" required>
-            </label>
-            <label>Ngày kết thúc: 
-                <input type="date" name="to" value="${to}" required>
-            </label>
-            <button type="submit">Xem lịch</button>
-        </form>
+            <form method="get" action="${pageContext.request.contextPath}/agenda/view" class="row g-3">
+                <div class="col-auto">
+                    <label>Ngày bắt đầu:
+                        <input type="date" name="from" value="${from}" required class="form-control">
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <label>Ngày kết thúc:
+                        <input type="date" name="to" value="${to}" required class="form-control">
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-success">Xem lịch</button>
+                </div>
+            </form>
 
-        <!-- ✅ DEBUG OUTPUT -->
-        <div class="debug">
-            <p>From: ${from}</p>
-            <p>To: ${to}</p>
-            <p>Employee Count: ${agenda.size()}</p>
-            <c:forEach var="entry" items="${agenda}" varStatus="loop">
-                <p>Employee ${loop.count}: ${entry.key.name} (ID: ${entry.key.employeeID})</p>
-            </c:forEach>
-        </div>
-
-        <!-- ✅ BẢNG AGENDA -->
-        <c:if test="${not empty agenda}">
-            <table>
+            <table class="table table-bordered mt-3" id="agendaTable">
                 <thead>
                     <tr>
                         <th>Nhân sự</th>
-                        <c:forEach var="day" items="${dateRange}">
-                            <th>${day.dayOfMonth}/${day.monthValue}</th>
-                        </c:forEach>
+                            <c:forEach var="d" items="${dateRange}">
+                            <th>${d}</th>
+                            </c:forEach>
                     </tr>
                 </thead>
-                <tbody>
-                    <c:forEach var="entry" items="${agenda}">
-                        <tr>
-                            <td>${entry.key.name} (ID: ${entry.key.employeeID})</td>
-                            <c:forEach var="day" items="${dateRange}">
-                                <c:set var="off" value="${entry.value[day]}" />
-                                <td class="${off ? 'off' : 'work'}">
-                                    ${off ? 'Nghỉ' : 'Làm'}
-                                </td>
-                            </c:forEach>
-                        </tr>
-                    </c:forEach>
+                <tbody id="agendaBody">
+                    <!-- JavaScript render dữ liệu tại đây -->
                 </tbody>
             </table>
-        </c:if>
-        <c:if test="${empty agenda}">
-            <p class="debug">No agenda data available.</p>
-        </c:if>
+            <pre>${employeeDaysOff}</pre>
+        </div>
+
+        <script>
+            const employeeDaysOff = ${employeeDaysOff};
+            const dateRange = ${dateRange};
+            console.log('${fn:escapeXml(employeeDaysOff)}');
+            console.log('${fn:escapeXml(dateRange)}');
+            const tbody = document.getElementById("agendaBody");
+
+            employeeDaysOff.forEach(emp => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td>${emp.name}</td>`; // Sửa ở đây
+
+                dateRange.forEach(date => {
+                    const td = document.createElement("td");
+                    const isOff = emp.daysOff.includes(date);
+                    td.className = isOff ? 'off' : 'work';
+                    td.textContent = isOff ? 'Nghỉ' : 'Làm';
+                    tr.appendChild(td);
+                });
+
+                tbody.appendChild(tr);
+            });
+        </script>
+
+
     </body>
 </html>

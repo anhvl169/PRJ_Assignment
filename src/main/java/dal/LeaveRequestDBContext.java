@@ -4,16 +4,13 @@
  */
 package dal;
 
+import java.util.List;
+import java.util.logging.Logger;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-import model.Employee;
+import model.Account;
 import model.LeaveRequests;
 
 /**
@@ -147,7 +144,7 @@ public class LeaveRequestDBContext extends DBContext {
 //            }
 //        }
 //    }
-    public List<LeaveRequests> getApprovedInRange(java.sql.Date fromDate, java.sql.Date toDate) {
+    public List<LeaveRequests> getApprovedInRange(java.util.Date fromDate, java.util.Date toDate) {
         EntityManager em = getEntityManager();
         try {
             LOGGER.info("Querying leave requests from " + fromDate + " to " + toDate);
@@ -158,9 +155,16 @@ public class LeaveRequestDBContext extends DBContext {
             List<LeaveRequests> results = query.getResultList();
             LOGGER.info("Found " + results.size() + " approved leave requests");
             for (LeaveRequests lr : results) {
-                LOGGER.info("Leave Request: EmployeeID=" + (lr.getCreatedBy() != null && lr.getCreatedBy().getEmployee() != null
-                        ? lr.getCreatedBy().getEmployee().getEmployeeID() : "null")
-                        + ", From=" + lr.getFromDate() + ", To=" + lr.getToDate() + ", Status=" + lr.getStatus());
+                Account acc = lr.getCreatedBy();
+                Integer empId = null;
+                if (acc != null && acc.getEmployee() != null) {
+                    empId = acc.getEmployee().getEmployeeID();
+                }
+                LOGGER.info("Leave Request: EmployeeID=" + empId
+                        + ", From=" + lr.getFromDate()
+                        + ", To=" + lr.getToDate()
+                        + ", Status=" + lr.getStatus());
+
             }
             return results;
         } finally {

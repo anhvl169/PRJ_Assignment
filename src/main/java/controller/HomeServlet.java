@@ -22,6 +22,7 @@ import model.Role;
  *
  * @author vulea
  */
+
 @WebServlet("/home")
 public class HomeServlet extends BaseRBACController {
 

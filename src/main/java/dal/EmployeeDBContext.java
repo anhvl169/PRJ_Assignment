@@ -4,11 +4,10 @@
  */
 package dal;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
-import jakarta.persistence.TypedQuery;
-import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import model.Employee;
 
 /**

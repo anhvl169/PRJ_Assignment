@@ -4,6 +4,7 @@
  */
 package controller;
 
+import com.google.gson.Gson;
 import controller.authentication.BaseRBACController;
 import dal.DivisionDBContext;
 import dal.EmployeeDBContext;
@@ -12,20 +13,18 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.Date;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 import model.Account;
 import model.Employee;
 import model.LeaveRequests;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.EmployeeDaysOff;
 
 /**
  *
@@ -54,7 +53,7 @@ public class ViewAgendaServlet extends BaseRBACController {
     @Override
     protected void processGet(HttpServletRequest req, HttpServletResponse resp, Account account) throws ServletException, IOException {
         try {
-            // 1. Lấy khoảng thời gian từ request (hoặc mặc định 7 ngày gần nhất)
+            //lấy ngày từ form
             String fromRaw = req.getParameter("from");
             String toRaw = req.getParameter("to");
 
@@ -65,77 +64,58 @@ public class ViewAgendaServlet extends BaseRBACController {
                     ? LocalDate.parse(toRaw)
                     : from.plusDays(6);
 
-            java.util.Date fromUtil = Date.from(from.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            java.util.Date toUtil = Date.from(to.atStartOfDay(ZoneId.systemDefault()).toInstant());
-            java.sql.Date fromDate = new java.sql.Date(fromUtil.getTime());
-            java.sql.Date toDate = new java.sql.Date(toUtil.getTime());
+            Date fromDate = Date.from(from.atStartOfDay(ZoneId.systemDefault()).toInstant());
+            Date toDate = Date.from(to.atStartOfDay(ZoneId.systemDefault()).toInstant());
 
-            LOGGER.info("Processing agenda from " + from + " to " + to);
-
-            // 2. Lấy danh sách nhân sự theo phòng ban của account
             Employee employee = account.getEmployee();
             if (employee == null || employee.getDivision() == null) {
-                throw new ServletException("Account or division not found for user");
+                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Account or division not found.");
+                return;
             }
+
             int divisionID = employee.getDivision().getDivisionID();
             List<Employee> employees = employeeDB.getByDivision(divisionID);
-            LOGGER.info("Found " + employees.size() + " employees for division ID: " + divisionID);
-            for (Employee emp : employees) {
-                LOGGER.info("Employee: " + emp.getName() + ", ID: " + emp.getEmployeeID());
-            }
-            
-            // 3. Lấy đơn xin nghỉ được duyệt trong khoảng thời gian
             List<LeaveRequests> leaveRequests = leaveDB.getApprovedInRange(fromDate, toDate);
-            LOGGER.info("Found " + leaveRequests.size() + " approved leave requests");
-            for (LeaveRequests lr : leaveRequests) {
-                LOGGER.info("Leave Request: EmployeeID=" + (lr.getCreatedBy() != null && lr.getCreatedBy().getEmployee() != null
-                        ? lr.getCreatedBy().getEmployee().getEmployeeID() : "null")
-                        + ", From=" + lr.getFromDate() + ", To=" + lr.getToDate() + ", Status=" + lr.getStatus());
-            }
-
-            // 4. Tạo danh sách ngày
-            List<LocalDate> dateRange = new ArrayList<>();
-            LocalDate current = from;
-            while (!current.isAfter(to)) {
-                dateRange.add(current);
-                current = current.plusDays(1);
-            }
-
-            // 5. Mapping: Map<Employee, Map<LocalDate, Boolean>>
-            Map<Employee, Map<LocalDate, Boolean>> agenda = new LinkedHashMap<>();
+            LOGGER.info("Found " + employees.size() + " employees in division " + divisionID);
             for (Employee emp : employees) {
-                Map<LocalDate, Boolean> dailyStatus = new LinkedHashMap<>();
-                for (LocalDate day : dateRange) {
-                    boolean isOff = leaveRequests.stream()
-                            .filter(lr -> lr.getCreatedBy() != null && lr.getCreatedBy().getEmployee() != null)
-                            .filter(lr -> lr.getCreatedBy().getEmployee().getEmployeeID() == emp.getEmployeeID())
-                            .anyMatch(lr -> {
-                                LocalDate start = lr.getFromDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                                LocalDate end = lr.getToDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                                LOGGER.fine("Checking day " + day + " against " + start + " to " + end + " for EmployeeID " + emp.getEmployeeID());
-                                // Workaround: Use inclusive range check
-                                boolean withinRange = !day.isBefore(start.minusDays(1)) && !day.isAfter(end.plusDays(1));
-                                LOGGER.fine("Within range: " + withinRange);
-                                return withinRange;
-                            });
-                    dailyStatus.put(day, isOff);
-                    LOGGER.fine("Employee " + emp.getName() + " on " + day + ": " + (isOff ? "Nghỉ" : "Làm"));
-                }
-                agenda.put(emp, dailyStatus);
+                LOGGER.info("Employee: ID=" + emp.getEmployeeID() + ", Name=" + emp.getName());
+            }
+            // Danh sách ngày trong khoảng
+            List<String> dateRange = new ArrayList<>();
+            for (LocalDate d = from; !d.isAfter(to); d = d.plusDays(1)) {
+                dateRange.add(d.toString());
             }
 
-            // 6. Gửi dữ liệu về JSP
+            // Chuẩn bị DTO
+            List<EmployeeDaysOff> dtoList = new ArrayList<>();
+            for (Employee emp : employees) {
+                List<String> daysOff = new ArrayList<>();
+                for (LeaveRequests lr : leaveRequests) {
+                    if (lr.getCreatedBy() != null
+                            && lr.getCreatedBy().getEmployee() != null
+                            && emp.getEmployeeID() == lr.getCreatedBy().getEmployee().getEmployeeID()) {
+                        LocalDate start = ((java.sql.Date) lr.getFromDate()).toLocalDate();
+                        LocalDate end = ((java.sql.Date) lr.getToDate()).toLocalDate();
+                        for (LocalDate d = start; !d.isAfter(end); d = d.plusDays(1)) {
+                            daysOff.add(d.toString());
+                        }
+                    }
+                }
+                dtoList.add(new EmployeeDaysOff(emp.getEmployeeID(), emp.getName(), daysOff));
+            }
+            System.out.println(dtoList);
             req.setAttribute("from", from);
             req.setAttribute("to", to);
-            req.setAttribute("dateRange", dateRange);
-            req.setAttribute("agenda", agenda);
+            req.setAttribute("employeeDaysOff", new Gson().toJson(dtoList));
+            req.setAttribute("dateRange", new Gson().toJson(dateRange));
 
             req.getRequestDispatcher("/view/agenda/agenda.jsp").forward(req, resp);
+
         } catch (DateTimeParseException e) {
             LOGGER.severe("Invalid date format: " + e.getMessage());
             resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid date format");
         } catch (Exception e) {
-            LOGGER.severe("Error processing agenda: " + e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error processing agenda", e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error processing agenda");
         }
     }
