@@ -57,8 +57,8 @@
                 </div>
             </form>
 
-            <table class="table table-bordered mt-3" id="agendaTable">
-                <thead>
+            <table class="table table-bordered table-hover table-striped align-middle" id="agendaTable">
+                <thead class="table-dark">
                     <tr>
                         <th>Nhân sự</th>
                             <c:forEach var="d" items="${dateRange}">
@@ -89,8 +89,7 @@
                 let ename = emp.name;
                 tdName.textContent = ename;
                 tr.appendChild(tdName);
-                console.log(emp.name);
-                
+
                 dateRange.forEach(date => {
                     const td = document.createElement("td");
                     const isOff = emp.daysOff.includes(date);
