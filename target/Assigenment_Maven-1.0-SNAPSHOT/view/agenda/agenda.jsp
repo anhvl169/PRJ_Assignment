@@ -66,11 +66,13 @@
                             </c:forEach>
                     </tr>
                 </thead>
+
                 <tbody id="agendaBody">
-                    <!-- JavaScript render dữ liệu tại đây -->
+
                 </tbody>
+
             </table>
-            <pre>${employeeDaysOff}</pre>
+
         </div>
 
         <script>
@@ -82,12 +84,17 @@
 
             employeeDaysOff.forEach(emp => {
                 const tr = document.createElement("tr");
-                tr.innerHTML = `<td>${emp.name}</td>`; // Sửa ở đây
 
+                const tdName = document.createElement("td");
+                let ename = emp.name;
+                tdName.textContent = ename;
+                tr.appendChild(tdName);
+                console.log(emp.name);
+                
                 dateRange.forEach(date => {
                     const td = document.createElement("td");
                     const isOff = emp.daysOff.includes(date);
-                    td.className = isOff ? 'off' : 'work';
+                    td.className = isOff ? 'bg-danger' : 'bg-success';
                     td.textContent = isOff ? 'Nghỉ' : 'Làm';
                     tr.appendChild(td);
                 });
