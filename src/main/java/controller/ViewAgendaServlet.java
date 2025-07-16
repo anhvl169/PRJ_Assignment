@@ -76,10 +76,12 @@ public class ViewAgendaServlet extends BaseRBACController {
             int divisionID = employee.getDivision().getDivisionID();
             List<Employee> employees = employeeDB.getByDivision(divisionID);
             List<LeaveRequests> leaveRequests = leaveDB.getApprovedInRange(fromDate, toDate);
+            
             LOGGER.info("Found " + employees.size() + " employees in division " + divisionID);
             for (Employee emp : employees) {
                 LOGGER.info("Employee: ID=" + emp.getEmployeeID() + ", Name=" + emp.getName());
             }
+            
             // Danh sách ngày trong khoảng
             List<String> dateRange = new ArrayList<>();
             for (LocalDate d = from; !d.isAfter(to); d = d.plusDays(1)) {
