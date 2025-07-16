@@ -31,15 +31,15 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-
+        String error = "Tên đăng nhập hoặc mật khẩu sai";
         Account acc = accountDB.getAccountByUsernameAndPassword(username, password);
 
         if (acc != null) {
             req.getSession().setAttribute("account", acc);
             resp.sendRedirect(req.getContextPath() + "/home");
         } else {
-            req.setAttribute("error", "Tên đăng nhập hoặc mật khẩu sai");
-            req.getRequestDispatcher("../view/login.jsp").forward(req, resp);
+            req.setAttribute("error", error);
+            req.getRequestDispatcher("/view/login.jsp").forward(req, resp);
         }
     }
 }

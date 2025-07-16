@@ -48,7 +48,7 @@
                             <td>${r.fromDate}</td>
                             <td>${r.toDate}</td>
                             <td>${r.reason}</td>
-                            <td>${r.createdBy.username}</td>
+                            <td>${r.createdBy.employee.name}</td>
                             
                                 <td class="text-center">
                                     <form method="post" class="d-inline">
